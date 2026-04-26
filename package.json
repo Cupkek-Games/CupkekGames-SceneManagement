@@ -1,0 +1,29 @@
+{
+  "name": "com.cupkekgames.scenemanagement",
+  "displayName": "CupkekGames SceneManagement",
+  "version": "0.1.0",
+  "author": {
+    "name": "CupkekGames",
+    "url": "https://www.docs.cupkek.games"
+  },
+  "unity": "6000.0",
+  "documentationUrl": "https://docs.cupkek.games/",
+  "description": "Scene-loading utilities for CupkekGames packages: SceneSO, SceneDatabase, SceneLoader, addressable scene loading, and initialization-loader scenes. Standalone — useful with or without the Sequencer package.",
+  "keywords": [
+    "Scene Management",
+    "Scene Loader",
+    "Addressables",
+    "Initialization",
+    "CupkekGames"
+  ],
+  "dependencies": {
+    "com.cupkekgames.core": "0.1.0"
+  },
+  "versionDefines": [
+    {
+      "name": "com.unity.addressables",
+      "expression": "",
+      "define": "UNITY_ADDRESSABLES"
+    }
+  ]
+}
