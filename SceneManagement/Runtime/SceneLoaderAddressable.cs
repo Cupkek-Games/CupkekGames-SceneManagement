@@ -8,7 +8,7 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
-using CupkekGames.Singleton;
+using CupkekGames.Singletons;
 using CupkekGames.Luna;
 
 #if UNITY_EDITOR

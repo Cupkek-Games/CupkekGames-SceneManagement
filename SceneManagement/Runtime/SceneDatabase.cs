@@ -1,5 +1,5 @@
 #if UNITY_ADDRESSABLES
-using CupkekGames.KeyValueDatabase;
+using CupkekGames.KeyValueDatabases;
 
 namespace CupkekGames.SceneManagement
 {
