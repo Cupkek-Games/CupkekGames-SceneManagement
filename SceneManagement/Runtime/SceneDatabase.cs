@@ -1,7 +1,7 @@
 #if UNITY_ADDRESSABLES
-using CupkekGames.Core;
+using CupkekGames.KeyValueDatabase;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
     public class SceneDatabase : KeyValueDatabaseMonoSO<string, SceneSO>
     {

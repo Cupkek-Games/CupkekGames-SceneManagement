@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
-using CupkekGames.Core;
+using CupkekGames.Singleton;
 using CupkekGames.Luna;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
     /// <summary>
     /// Build-index scene loading API (singleton). Does not load any scene by itself — add <see cref="SceneLoaderStartup"/> if you want an automatic first scene from the init scene.

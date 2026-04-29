@@ -1,4 +1,5 @@
 #if UNITY_ADDRESSABLES
+using CupkekGames.EditorInspector;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,14 +8,14 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
-using CupkekGames.Core;
+using CupkekGames.Singleton;
 using CupkekGames.Luna;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
   /// <summary>
   /// Addressables scene loading API (singleton). Does not load any scene by itself — add

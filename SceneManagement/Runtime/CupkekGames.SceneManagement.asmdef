@@ -1,11 +1,13 @@
 {
-    "name": "CupkekGames.Systems.SceneManagement",
+    "name": "CupkekGames.SceneManagement",
     "rootNamespace": "",
     "references": [
+        "GUID:4d0a4020d4304c2eb6ba6c7ede9ce947",
         "GUID:9e24947de15b9834991c9d8411ea37cf",
         "GUID:84651a3751eca9349aac36a66bba901b",
-        "GUID:38afbb2359e489e4fa79dc88f61428b5",
-        "GUID:8c5a58f4ceeaeff428a5333f02ab4313"
+        "GUID:8c5a58f4ceeaeff428a5333f02ab4313",
+        "GUID:aa6539cffd9044b9aa2dc37aa2c66ef0",
+        "GUID:dced415b883e4520a8a465c931d081e3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

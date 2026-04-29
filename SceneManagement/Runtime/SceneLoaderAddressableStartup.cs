@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CupkekGames.Luna;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
     /// <summary>
     /// Optional automatic Addressables load of one or more <see cref="SceneSO"/> scenes on <c>Start</c>

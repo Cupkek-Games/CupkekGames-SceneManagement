@@ -1,14 +1,14 @@
 ﻿#if UNITY_ADDRESSABLES
+using CupkekGames.EditorInspector;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
-using CupkekGames.Core;
 using CupkekGames.Luna;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
   /// <summary>
   /// This class is responsible for starting the game by loading the persistent managers scene 

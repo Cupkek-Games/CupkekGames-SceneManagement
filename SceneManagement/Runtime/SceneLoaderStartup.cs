@@ -1,7 +1,7 @@
 using UnityEngine;
 using CupkekGames.Luna;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
     /// <summary>
     /// Optional automatic load of a build-index scene on <c>Start</c> (e.g. from an initialization scene).

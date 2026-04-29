@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CupkekGames.Luna;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
   // Do not use struct, because we need to pass it by reference
   public class SceneLoadRequest

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace CupkekGames.Systems
+namespace CupkekGames.SceneManagement
 {
   /// <summary>
   /// This class is a base class which contains what is common to all game scenes (Locations, Menus, Managers)

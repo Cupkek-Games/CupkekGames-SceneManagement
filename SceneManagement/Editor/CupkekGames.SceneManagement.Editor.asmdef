@@ -1,9 +1,7 @@
 {
-    "name": "CupkekGames.Systems.SceneManagement.Editor",
+    "name": "CupkekGames.SceneManagement.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:38afbb2359e489e4fa79dc88f61428b5",
-        "GUID:ab7612e7fe1d7e64ab54a584495caa06",
         "GUID:87dd79b08b4b3ec4b9fe695ce817bd86"
     ],
     "includePlatforms": [
