@@ -19,6 +19,16 @@ namespace CupkekGames.SceneManagement
 
         public event Action<string, int> OnSceneLoad;
 
+        /// <summary>
+        /// Normalized async scene-load progress, 0..1. Fires each frame during
+        /// <see cref="LoadSceneAsync"/> (Unity caps <c>AsyncOperation.progress</c>
+        /// at 0.9 while activation is held, so it is rescaled to a full 0..1
+        /// range), then once more with 1 when loading completes. Drives a
+        /// determinate loading bar — see the GameFull <c>SceneLoadProgressBinder</c>
+        /// sample, which forwards this to a <c>RadialLoading.SetProgress</c>.
+        /// </summary>
+        public event Action<float> OnLoadProgress;
+
         public void LoadScene(string sceneName, SceneTransition sceneLoadTransition,
             bool deferFadeOutUntilManualComplete = false)
         {
@@ -110,6 +120,9 @@ namespace CupkekGames.SceneManagement
             // Update the UI based on loading progress
             while (!operation.isDone)
             {
+                // Rescale Unity's 0..0.9 activation-hold range to a full 0..1 bar.
+                OnLoadProgress?.Invoke(Mathf.Clamp01(operation.progress / 0.9f));
+
                 // Check if the scene has finished loading (progress >= 0.9f)
                 if (operation.progress >= 0.9f)
                 {
@@ -118,6 +131,9 @@ namespace CupkekGames.SceneManagement
 
                 yield return null;  // Wait for the next frame
             }
+
+            // Settle the bar at full once the scene is in.
+            OnLoadProgress?.Invoke(1f);
 
             if (!deferFadeOutUntilManualComplete)
             {
