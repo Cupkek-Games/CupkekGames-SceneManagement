@@ -17,8 +17,8 @@
     "CupkekGames"
   ],
   "dependencies": {
-    "com.cupkekgames.singletons": "0.1.1",
-    "com.cupkekgames.keyvaluedatabases": "0.1.1",
+    "com.cupkekgames.singletons": "0.1.2",
+    "com.cupkekgames.keyvaluedatabases": "0.2.0",
     "com.cupkekgames.editorinspector": "0.1.0"
   },
   "versionDefines": [
