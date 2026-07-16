@@ -60,6 +60,9 @@ namespace CupkekGames.SceneManagement
 
       // Clear all state to prevent addressable handle issues
       _loadedScenes.Clear();
+#if UNITY_EDITOR
+      _externallyLoadedScenes.Clear();
+#endif
       _sceneLoadRequests.Clear();
       _currentScreenTransition = null;
       _pendingManualFadeOutTransition = null;
@@ -83,6 +86,13 @@ namespace CupkekGames.SceneManagement
 
     [MultiLineHeader("For debug purposes only. Do not modify.")] [SerializeField]
     private List<SceneSO> _loadedScenes = new List<SceneSO>();
+
+#if UNITY_EDITOR
+    // Editor cold start: a scene opened directly in the editor never passed through this loader,
+    // so unload-current requests can't see it. Adopted scenes carry no addressables handle and
+    // are unloaded through SceneManager instead.
+    private readonly HashSet<SceneSO> _externallyLoadedScenes = new HashSet<SceneSO>();
+#endif
 
     public List<SceneSO> LoadedScenes => _loadedScenes;
 
@@ -147,6 +157,37 @@ namespace CupkekGames.SceneManagement
       }
     }
 
+#if UNITY_EDITOR
+    /// <summary>
+    /// Editor only. Registers scenes that are open in the editor but were never loaded through this
+    /// loader (play mode started directly in a game scene), so unload-current semantics still hold.
+    /// </summary>
+    private void AdoptExternallyLoadedScenes()
+    {
+      if (SceneDatabase.Instance == null) return;
+
+      foreach (SceneSO sceneSO in SceneDatabase.Instance.Values)
+      {
+        if (sceneSO == null || _loadedScenes.Contains(sceneSO)) continue;
+
+        UnityEngine.Object sceneAsset = sceneSO.sceneReference != null ? sceneSO.sceneReference.editorAsset : null;
+        if (sceneAsset == null) continue;
+
+        Scene scene = SceneManager.GetSceneByName(sceneAsset.name);
+        if (!scene.isLoaded) continue;
+
+        _loadedScenes.Add(sceneSO);
+        _externallyLoadedScenes.Add(sceneSO);
+        Debug.Log($"SceneLoader: adopted editor-loaded scene '{sceneAsset.name}' (cold start).");
+      }
+    }
+
+    private void OnExternalSceneUnloaded(AsyncOperation _)
+    {
+      HandleSceneUnloadCompleted();
+    }
+#endif
+
     private void UnLoadScenes()
     {
       // InternalDebug.Log("SceneLoader: Unloading scenes...");
@@ -156,6 +197,17 @@ namespace CupkekGames.SceneManagement
       {
         SceneSO gameSceneSO = sceneLoadRequest.ScenesToUnload[i];
 
+#if UNITY_EDITOR
+        if (_externallyLoadedScenes.Remove(gameSceneSO))
+        {
+          // No addressables handle exists for an adopted scene - unload through SceneManager.
+          AsyncOperation op = SceneManager.UnloadSceneAsync(gameSceneSO.sceneReference.editorAsset.name);
+          if (op != null) op.completed += OnExternalSceneUnloaded;
+          else OnExternalSceneUnloaded(null);
+          continue;
+        }
+#endif
+
         AsyncOperationHandle<SceneInstance> _unloadingOperationHandle = gameSceneSO.sceneReference.UnLoadScene();
         _unloadingOperationHandle.Completed += OnSceneUnLoaded;
 
@@ -164,6 +216,11 @@ namespace CupkekGames.SceneManagement
     }
 
     private void OnSceneUnLoaded(AsyncOperationHandle<SceneInstance> obj)
+    {
+      HandleSceneUnloadCompleted();
+    }
+
+    private void HandleSceneUnloadCompleted()
     {
       SceneLoadRequest sceneLoadRequest = _sceneLoadRequests[0];
 
@@ -507,12 +564,13 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneAndUnLoadCurrent(SceneSO sceneToLoad, SceneTransition sceneLoadTransitionType,
       bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToLoad = new List<SceneSO>();
       scenesToLoad.Add(sceneToLoad);
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
-
-      Debug.Log(_loadedScenes.Count);
 
       scenesToUnLoad = scenesToUnLoad.Except(scenesToLoad).ToList();
       LoadSceneRequest(scenesToLoad, scenesToUnLoad, sceneLoadTransitionType, deferFadeOutUntilManualComplete);
@@ -521,6 +579,9 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneAndUnLoadCurrent(List<SceneSO> scenesToLoad, SceneTransition sceneLoadTransitionType,
       bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
 
@@ -530,6 +591,9 @@ namespace CupkekGames.SceneManagement
 
     public void UnloadAllCurrent(SceneTransition sceneLoadTransitionType, bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
       LoadSceneRequest(null, scenesToUnLoad, sceneLoadTransitionType, deferFadeOutUntilManualComplete);
