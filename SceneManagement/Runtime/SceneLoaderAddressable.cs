@@ -66,6 +66,7 @@ namespace CupkekGames.SceneManagement
       _sceneLoadRequests.Clear();
       _currentScreenTransition = null;
       _pendingManualFadeOutTransition = null;
+      _loaderAnchorScene = default;
       _activeScene = null;
 
       // Clear static events to prevent memory leaks
@@ -80,6 +81,15 @@ namespace CupkekGames.SceneManagement
     /// Cleared after <see cref="CompleteDeferredLoadingTransition"/>.
     /// </summary>
     private SceneTransition _pendingManualFadeOutTransition;
+
+    /// <summary>
+    /// Empty placeholder scene created when a transition would unload every loaded
+    /// scene — Unity refuses to unload the last loaded scene (editor cold start:
+    /// Play directly in the outgoing scene, then trigger a full scene swap).
+    /// Keeps the strict unload-before-load order valid; removed in
+    /// <see cref="OnProcessCompleted"/> once the new scenes exist.
+    /// </summary>
+    private Scene _loaderAnchorScene;
 
     //Parameters coming from scene loading requests
     private SceneSO _activeScene;
@@ -193,9 +203,25 @@ namespace CupkekGames.SceneManagement
       // InternalDebug.Log("SceneLoader: Unloading scenes...");
       SceneLoadRequest sceneLoadRequest = _sceneLoadRequests[0];
 
-      for (int i = 0; i < sceneLoadRequest.ScenesToUnload.Count; i++)
+      // Snapshot: the last completion can run SYNCHRONOUSLY inside this loop
+      // (editor cold-start fallback when UnloadSceneAsync refuses the last
+      // loaded scene and returns null) and HandleSceneUnloadCompleted nulls
+      // ScenesToUnload — iterating the live list NREs on the loop condition.
+      List<SceneSO> scenesToUnload = new List<SceneSO>(sceneLoadRequest.ScenesToUnload);
+
+      // Unity cannot unload the last loaded scene. If this unload set covers
+      // every loaded scene, create an empty anchor scene so the strict
+      // unload-before-load order stays valid; it is removed at process
+      // completion. Never triggers in a normal boot (a bootstrap/init scene
+      // stays loaded) — this is the editor cold-start path.
+      if (!_loaderAnchorScene.IsValid() && SceneManager.sceneCount <= scenesToUnload.Count)
       {
-        SceneSO gameSceneSO = sceneLoadRequest.ScenesToUnload[i];
+        _loaderAnchorScene = SceneManager.CreateScene("SceneLoader Anchor");
+      }
+
+      for (int i = 0; i < scenesToUnload.Count; i++)
+      {
+        SceneSO gameSceneSO = scenesToUnload[i];
 
 #if UNITY_EDITOR
         if (_externallyLoadedScenes.Remove(gameSceneSO))
@@ -397,6 +423,15 @@ namespace CupkekGames.SceneManagement
       }
 
       // Debug.Log("SceneLoader: Loading process completed. " + _sceneLoadRequests.Count + " requests in queue.");
+
+      // Remove the last-scene anchor now that the new scenes exist. If the
+      // anchor is somehow the only scene left (unload-only request), keep it —
+      // Unity requires at least one loaded scene.
+      if (_loaderAnchorScene.IsValid() && SceneManager.sceneCount > 1)
+      {
+        SceneManager.UnloadSceneAsync(_loaderAnchorScene);
+        _loaderAnchorScene = default;
+      }
 
       _sceneLoadRequests.RemoveAt(0);
       if (_sceneLoadRequests.Count > 0)

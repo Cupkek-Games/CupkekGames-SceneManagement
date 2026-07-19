@@ -20,7 +20,12 @@ namespace CupkekGames.SceneManagement
             if (_instance == null)
             {
                 _instance = this;
-                DontDestroyOnLoad(gameObject); // Optional: keep this instance across scenes
+                // Roots only — a child rides on its (already persistent) root's
+                // lifetime; DDOL on a child is a warning no-op.
+                if (transform.parent == null)
+                {
+                    DontDestroyOnLoad(gameObject);
+                }
             }
             else
             {
