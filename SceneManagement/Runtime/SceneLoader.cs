@@ -42,6 +42,12 @@ namespace CupkekGames.SceneManagement
         }
 
         /// <summary>
+        /// True while a load started with <c>deferFadeOutUntilManualComplete: true</c> is waiting
+        /// for <see cref="CompleteDeferredLoadingTransition"/>. Diagnostic/observability seam.
+        /// </summary>
+        public bool HasPendingDeferredTransition => _hasDeferredCompletion && _pendingFadeOutTransition != null;
+
+        /// <summary>
         /// Call after a load started with <c>deferFadeOutUntilManualComplete: true</c> to hide the loading transition and raise <see cref="OnSceneLoad"/>.
         /// No-op if there is no pending deferred load (e.g. cold play from a single scene).
         /// </summary>

@@ -462,6 +462,12 @@ namespace CupkekGames.SceneManagement
     /// Ends the loading presentation after a deferred load (see <see cref="SceneLoadRequest.DeferFadeOutUntilManualComplete"/>).
     /// Safe to call when nothing is pending (no-op).
     /// </summary>
+    /// <summary>
+    /// True while a load started with <c>deferFadeOutUntilManualComplete: true</c> is waiting
+    /// for <see cref="CompleteDeferredLoadingTransition"/>. Diagnostic/observability seam.
+    /// </summary>
+    public bool HasPendingDeferredTransition => _pendingManualFadeOutTransition != null;
+
     public void CompleteDeferredLoadingTransition()
     {
       TryCompleteDeferredLoadingTransition();
