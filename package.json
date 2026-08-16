@@ -1,7 +1,7 @@
 {
   "name": "com.cupkekgames.scenemanagement",
   "displayName": "CupkekGames SceneManagement",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "author": {
     "name": "CupkekGames",
     "url": "https://www.docs.cupkek.games"
@@ -17,9 +17,9 @@
     "CupkekGames"
   ],
   "dependencies": {
-    "com.cupkekgames.singletons": "0.1.3",
-    "com.cupkekgames.keyvaluedatabases": "0.2.0",
-    "com.cupkekgames.editorinspector": "0.1.0"
+    "com.cupkekgames.singletons": "0.2.0",
+    "com.cupkekgames.keyvaluedatabases": "0.3.0",
+    "com.cupkekgames.editorinspector": "0.2.0"
   },
   "versionDefines": [
     {
