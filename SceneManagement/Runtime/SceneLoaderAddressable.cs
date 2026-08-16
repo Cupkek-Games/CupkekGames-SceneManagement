@@ -13,6 +13,7 @@ using CupkekGames.Luna;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using Unity.Scripting.LifecycleManagement;
 #endif
 
 namespace CupkekGames.SceneManagement
@@ -22,7 +23,7 @@ namespace CupkekGames.SceneManagement
   /// <see cref="SceneLoaderAddressableStartup"/> for an automatic first load from the init scene, or
   /// <see cref="InitializationLoader"/> when you need persistent scenes loaded first.
   /// </summary>
-  public class SceneLoaderAddressable : Singleton<SceneLoaderAddressable>
+  public partial class SceneLoaderAddressable : Singleton<SceneLoaderAddressable>
   {
 #if UNITY_EDITOR
     [InitializeOnLoadMethod]
@@ -109,7 +110,9 @@ namespace CupkekGames.SceneManagement
     private List<SceneLoadRequest> _sceneLoadRequests = new List<SceneLoadRequest>();
 
     // Events
+    [AutoStaticsCleanup]
     public static Action<List<SceneSO>> SceneReadyEvent;
+    [AutoStaticsCleanup]
     public static Action<List<SceneSO>> SceneUnloadEvent;
 
     /// <summary>

@@ -1,10 +1,12 @@
 #if UNITY_ADDRESSABLES
 using CupkekGames.KeyValueDatabases;
+using Unity.Scripting.LifecycleManagement;
 
 namespace CupkekGames.SceneManagement
 {
-    public class SceneDatabase : KeyValueDatabaseMonoSO<string, SceneSO>
+    public partial class SceneDatabase : KeyValueDatabaseMonoSO<string, SceneSO>
     {
+        [AutoStaticsCleanup]
         private static SceneDatabase _instance;
 
         public static SceneDatabase Instance
