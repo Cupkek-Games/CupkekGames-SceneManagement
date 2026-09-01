@@ -497,6 +497,12 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneRequest(List<SceneSO> scenesToLoad, List<SceneSO> scenesToUNNLoad,
       SceneTransition sceneLoadTransitionType, bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      // Editor cold starts: scenes opened by hand never entered _loadedScenes,
+      // so an explicit unload list naming one could never complete. Adopt at the
+      // single public entry so every request path (not just unload-current) sees them.
+      AdoptExternallyLoadedScenes();
+#endif
       //Prevent a double-loading, for situations where the player falls in two Exit colliders in one frame
       // if (IsLoading())
       // {
@@ -608,9 +614,6 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneAndUnLoadCurrent(SceneSO sceneToLoad, SceneTransition sceneLoadTransitionType,
       bool deferFadeOutUntilManualComplete = false)
     {
-#if UNITY_EDITOR
-      AdoptExternallyLoadedScenes();
-#endif
       List<SceneSO> scenesToLoad = new List<SceneSO>();
       scenesToLoad.Add(sceneToLoad);
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
@@ -623,9 +626,6 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneAndUnLoadCurrent(List<SceneSO> scenesToLoad, SceneTransition sceneLoadTransitionType,
       bool deferFadeOutUntilManualComplete = false)
     {
-#if UNITY_EDITOR
-      AdoptExternallyLoadedScenes();
-#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
 
@@ -635,9 +635,6 @@ namespace CupkekGames.SceneManagement
 
     public void UnloadAllCurrent(SceneTransition sceneLoadTransitionType, bool deferFadeOutUntilManualComplete = false)
     {
-#if UNITY_EDITOR
-      AdoptExternallyLoadedScenes();
-#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
       LoadSceneRequest(null, scenesToUnLoad, sceneLoadTransitionType, deferFadeOutUntilManualComplete);
