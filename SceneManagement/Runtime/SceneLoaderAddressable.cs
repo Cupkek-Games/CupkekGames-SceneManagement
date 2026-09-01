@@ -616,6 +616,12 @@ namespace CupkekGames.SceneManagement
     {
       List<SceneSO> scenesToLoad = new List<SceneSO>();
       scenesToLoad.Add(sceneToLoad);
+#if UNITY_EDITOR
+      // Adopt BEFORE snapshotting: an editor-cold-started scene must be in
+      // _loadedScenes to make it into the unload list (the entry-point adoption
+      // in LoadSceneRequest runs too late for this snapshot).
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
 
@@ -626,6 +632,12 @@ namespace CupkekGames.SceneManagement
     public void LoadSceneAndUnLoadCurrent(List<SceneSO> scenesToLoad, SceneTransition sceneLoadTransitionType,
       bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      // Adopt BEFORE snapshotting: an editor-cold-started scene must be in
+      // _loadedScenes to make it into the unload list (the entry-point adoption
+      // in LoadSceneRequest runs too late for this snapshot).
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
 
@@ -635,6 +647,12 @@ namespace CupkekGames.SceneManagement
 
     public void UnloadAllCurrent(SceneTransition sceneLoadTransitionType, bool deferFadeOutUntilManualComplete = false)
     {
+#if UNITY_EDITOR
+      // Adopt BEFORE snapshotting: an editor-cold-started scene must be in
+      // _loadedScenes to make it into the unload list (the entry-point adoption
+      // in LoadSceneRequest runs too late for this snapshot).
+      AdoptExternallyLoadedScenes();
+#endif
       List<SceneSO> scenesToUnLoad = new List<SceneSO>();
       scenesToUnLoad.AddRange(_loadedScenes);
       LoadSceneRequest(null, scenesToUnLoad, sceneLoadTransitionType, deferFadeOutUntilManualComplete);
