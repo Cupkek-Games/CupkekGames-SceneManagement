@@ -73,6 +73,7 @@ namespace CupkekGames.SceneManagement
       // Clear static events to prevent memory leaks
       SceneReadyEvent = null;
       SceneUnloadEvent = null;
+      TransitionEnded = null;
     }
 
     private SceneTransition _currentScreenTransition = null;
@@ -114,6 +115,21 @@ namespace CupkekGames.SceneManagement
     public static Action<List<SceneSO>> SceneReadyEvent;
     [AutoStaticsCleanup]
     public static Action<List<SceneSO>> SceneUnloadEvent;
+
+    /// <summary>
+    /// Raised when a load's presentation ends: the last queued request has loaded and the loading
+    /// screen starts fading out, at once or on <see cref="CompleteDeferredLoadingTransition"/> for a
+    /// deferred load. <see cref="IsTransitioning"/> is false from then on.
+    /// </summary>
+    [AutoStaticsCleanup]
+    public static Action TransitionEnded;
+
+    /// <summary>
+    /// True from a load request until its presentation ends: while requests are queued or loading,
+    /// and while a deferred fade-out waits for <see cref="CompleteDeferredLoadingTransition"/>.
+    /// A caller that started a load waits for it to go false (or for <see cref="TransitionEnded"/>).
+    /// </summary>
+    public bool IsTransitioning => _sceneLoadRequests.Count > 0 || HasPendingDeferredTransition;
 
     /// <summary>
     /// Starts the loading process
@@ -458,6 +474,9 @@ namespace CupkekGames.SceneManagement
 
           _currentScreenTransition = null;
         }
+
+        // Over now, unless the presentation waits for the deferred completion.
+        if (_pendingManualFadeOutTransition == null) TransitionEnded?.Invoke();
       }
     }
 
@@ -486,6 +505,7 @@ namespace CupkekGames.SceneManagement
 
       _pendingManualFadeOutTransition.FadeOut();
       _pendingManualFadeOutTransition = null;
+      if (_sceneLoadRequests.Count == 0) TransitionEnded?.Invoke();
       return true;
     }
 
